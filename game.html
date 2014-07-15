@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<script src="bower_components/jquery/dist/jquery.js"></script>
+<canvas id="hackCanvas" width="400" height="400" style="border: 1px solid"></canvas>
+<script>
+    var canvasWidth = $("#hackCanvas").width();
+    var canvasHeight = $("#hackCanvas").height();
+
+    var c = document.getElementById("hackCanvas");
+    var ctx = c.getContext("2d");
+    ctx.fillStyle = "green";
+
+    function Point(x, y, size, ctx){
+        this.x = x;
+        this.y = y;
+        this.size = size;
+        this.ctx = ctx;  
+      
+        this.print = function(){
+            this.ctx.fillRect(this.x * this.size, this.y * this.size, this.size, this.size);
+      }
+
+    }
+
+    var snake = (function(ctx){
+        var tail = [];
+        var head = new Point(4, 0, 10, ctx);
+        var ate = false;
+
+        [1, 2, 3].forEach(function(i){
+            tail.push(new Point(i, 0, 10, ctx));
+        })
+        tail.push(head);
+        
+        var direction = "right";
+
+        var print = function(){
+            tail.forEach(function(point){
+                point.print();
+            })
+        }
+
+        var changeDirection = function(dir){
+            direction = dir;
+        }
+
+        var onFood = function(foodX, foodY){
+            return head.x === foodX && head.y === foodY;
+        }
+
+        var getFat = function() {
+            ate = true;
+        }
+
+        var moveHelper = function(XInc, yInc, foodX, foodY){
+            if (!(ate)){
+               tail.shift();
+            }
+
+            var newHead = new Point(head.x + XInc, head.y + yInc, 10, ctx);
+            tail.push(head);
+            head = newHead;
+            ate = false;
+        }
+
+        var move = function(foodX, foodY){
+            if(direction === "right"){
+                moveHelper(1, 0, foodX, foodY);
+            }
+
+            if(direction === "left"){
+                moveHelper(-1, 0, foodX, foodY);
+            }
+
+            if(direction === "up"){
+                moveHelper(0, -1, foodX, foodY);
+            }
+
+            if(direction === "down"){
+                moveHelper(0, 1, foodX, foodY);
+            }
+        }
+
+        return {
+            print: print,
+            move: move,
+            changeDirection: changeDirection,
+            onFood: onFood,
+            getFat: getFat
+        }
+    }(ctx))
+
+    $(document).keydown(function(e) {
+        if(e.keyCode === 37){
+            snake.changeDirection("left");
+        }
+
+        if(e.keyCode === 38){
+            snake.changeDirection("up");
+        }
+
+        if(e.keyCode === 39){
+            snake.changeDirection("right");
+        }
+
+        if(e.keyCode === 40){
+            snake.changeDirection("down");
+        }
+
+    })
+
+    var food = (function(ctx){
+        this.tile = new Point(1, 8, 10, ctx);
+
+        var that = this;
+
+        var print = function(){
+            that.tile.print();
+        }
+
+        var getX = function() {
+            return that.tile.x;
+        }
+
+        var getY = function() {
+            return that.tile.y;
+        }
+
+        var generateNewPosition = function() {
+            newX = parseInt(((Math.random() * canvasWidth)/10), 10);
+            newY = parseInt(((Math.random() * canvasHeight)/10), 10);
+            that.tile = new Point(newX, newY, 10, ctx);
+            that.tile.print();
+        }
+
+        return {
+            print: print,
+            getX: getX,
+            getY: getY,
+            generateNewPosition: generateNewPosition
+
+        }
+
+    }(ctx));
+
+    setInterval(function(){
+        if(snake.onFood(food.getX(), food.getY())){
+            food.generateNewPosition();
+            snake.getFat();
+        }
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        snake.move(food.getX(), food.getY());
+        snake.print();
+        food.print();
+
+
+    }, 100)
+
+</script>
+</html>
