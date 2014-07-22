@@ -22,13 +22,13 @@
 
     }
 
-    var snake = (function(ctx){
+    var Snake = function(ctx, startPositions, startY){
         var tail = [];
-        var head = new Point(4, 0, 10, ctx);
+        var head = new Point(startPositions.pop(), startY, 10, ctx);
         var ate = false;
 
-        [1, 2, 3].forEach(function(i){
-            tail.push(new Point(i, 0, 10, ctx));
+        startPositions.forEach(function(i){
+            tail.push(new Point(i, startY, 10, ctx));
         })
         tail.push(head);
         
@@ -88,23 +88,23 @@
             onFood: onFood,
             getFat: getFat
         }
-    }(ctx))
+    }
 
     $(document).keydown(function(e) {
         if(e.keyCode === 37){
-            snake.changeDirection("left");
+            snake1.changeDirection("left");
         }
 
         if(e.keyCode === 38){
-            snake.changeDirection("up");
+            snake1.changeDirection("up");
         }
 
         if(e.keyCode === 39){
-            snake.changeDirection("right");
+            snake1.changeDirection("right");
         }
 
         if(e.keyCode === 40){
-            snake.changeDirection("down");
+            snake1.changeDirection("down");
         }
 
     })
@@ -143,15 +143,21 @@
 
     }(ctx));
 
+    var snake1 = new Snake(ctx, [1, 2, 3], 0);
+    var snake2 = new Snake(ctx, [1, 2, 3], 3);
+
     setInterval(function(){
-        if(snake.onFood(food.getX(), food.getY())){
+        if(snake1.onFood(food.getX(), food.getY())){
             food.generateNewPosition();
-            snake.getFat();
+            snake1.getFat();
         }
         ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-        snake.move(food.getX(), food.getY());
-        snake.print();
+        snake1.move(food.getX(), food.getY());
+        snake1.print();
         food.print();
+        snake2.move(food.getX(), food.getY());
+        snake2.print();
+
 
 
     }, 100)
