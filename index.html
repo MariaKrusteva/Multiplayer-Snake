@@ -1,9 +1,59 @@
 <!DOCTYPE html>
 <html>
-<script src="bower_components/jquery/dist/jquery.js"></script>
-<script src="/socket.io/socket.io.js"></script>
-<script>
-  var socket = new io("http://192.168.1.223:3000");
+
+    <head>
+        <title>Multiplayer Snake</title>
+        <link rel="stylesheet" type="text/css" href="styles.css">
+        <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">   
+    </head>
+    
+    <body>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-4">
+                <form role="form" id="form">
+                        <div class="form-group">
+                            <label>Your name: </label>
+                            <input type="text" class="form-control" id="name" placeholder="your name">
+                        </div>
+                        <button id="create" class="btn btn-primary btn-lg active">Create game</button>
+                </form>
+            </div>
+            <div class="col-xs-4">
+                <div id="gameLobbyContainer">
+                    <h2>Game Lobby:</h2>
+                    <button id="refresh" class="btn btn-success">Refresh</button>
+                    <table class="table table-bordered">
+                      <thead>
+                          <tr>
+                              <th>GameID:</th> 
+                              <th>Connect:</th>
+                          </tr>
+                      </thead>
+
+                      <tbody id="gameLobbyTableBody">
+
+                       </tbody>
+                      </table>
+                </div>
+                <!-- Table -->
+            </div>
+        </div>
+    </div>
+    <canvas id="hackCanvas"></canvas>     
+</body>
+
+<script id="table-template" type="text/x-handlebars-template" class="table table-condensed"> 
+  {{#each row}}
+  <tr>
+    <td>{{this.gameId}}</td>
+    <td>
+        <button id="{{this.gameId}}" class="btn btn-success connect">Connect</button>
+    </td>
+  </tr>
+  {{/each}}
 </script>
-<canvas id="hackCanvas" width="400" height="400" style="border: 1px solid"></canvas>
+
+    <script data-main="scripts/app" type="text/javascript" src="bower_components/requirejs/require.js "></script>
+
 </html>
